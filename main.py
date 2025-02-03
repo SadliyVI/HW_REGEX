@@ -17,19 +17,38 @@ def normalize_phone(phone):
         phone = re.sub(phone_pattern, phone_pattern_subst, phone)
     else: phone = ''
     return phone
+#
+# def merge_duplicates(contacts):
+#     result = {}
+#     for contact in contacts:
+#         # Используем кортеж из lastname и firstname в качестве ключа
+#         key = (contact[0], contact[1])
+#         if key not in result:
+#             result[key] = contact
+#         else:
+#             # Объединяем информацию, сохраняя наиболее полные данные
+#             for i in range(len(contact)):
+#                 if contact[i] and not result[key][i]:
+#                     result[key][i] = contact[i]
+#     return list(result.values())
 
 def merge_duplicates(contacts):
     result = {}
     for contact in contacts:
-        # Используем кортеж из lastname, firstname и surname в качестве ключа
-        key = (contact[0], contact[1], contact[2])
+        lastname, firstname, surname, *rest = contact
+        key = (lastname, firstname)
         if key not in result:
             result[key] = contact
         else:
             # Объединяем информацию, сохраняя наиболее полные данные
+            merged = list(result[key])
             for i in range(len(contact)):
-                if contact[i] and not result[key][i]:
-                    result[key][i] = contact[i]
+                if contact[i] and not merged[i]:
+                    merged[i] = contact[i]
+                elif i == 2 and contact[i] and not merged[i]:  # Проверяем
+                    # отчество
+                    merged[i] = contact[i]
+            result[key] = merged
     return list(result.values())
 
 # Чтение CSV файла
